@@ -72,7 +72,7 @@ def get_listing_information(listing_id):
         number of bedrooms
     )
     """
-    html_content = "html_files/listing_" + id_list + ".html"
+    html_content = "html_files/listing_" + listing_id + ".html"
     pol_list = []
     place_list = []
     bed_list = []
@@ -126,7 +126,12 @@ def get_detailed_listing_database(html_file):
         ...
     ]
     """
-    pass
+    listings = get_listings_from_search_results(html_file)
+    newContent = []
+    for listing in listings:
+        listing_info = get_listing_information(listing[2])
+        newContent.append(listing + listing_info)
+    return newContent
 
 
 def write_csv(data, filename):
@@ -147,7 +152,19 @@ def write_csv(data, filename):
     In order of least cost to most cost.
     This function should not return anything.
     """
-    pass
+    listOrganized = sorted(data, key = lambda x : x[1])
+    content = open(filename, "w")
+    content.write("Listing Title,Cost,Listing ID,Policy Number,Place Type,Number of Bedrooms")
+    for tuple in listOrganized:
+        content.write("\n")
+        for item in tuple:
+            if item == tuple[-1]:
+                content.write(str(item))
+            else:
+                content.write(str(item) +",")
+    content.close()
+
+
 
 
 def check_policy_numbers(data):
@@ -168,7 +185,15 @@ def check_policy_numbers(data):
         ...
     ]
     """
-    pass
+    lister = []
+    for datum in data:
+        if datum[3] != "Pending" and datum[3] != "Exempt":
+            if re.search("20[0-9][0-9]-00[0-9]{4}STR", datum[3]) or re.search("STR-000[0-9]{4}", datum[3]):
+                continue
+            else:
+                lister.append(datum[2])
+    return lister
+
 
 
 def extra_credit(listing_id):
@@ -184,7 +209,28 @@ def extra_credit(listing_id):
     gone over their 90 day limit, else return True, indicating the lister has
     never gone over their limit.
     """
-    pass
+    htmlContent = "html_files/listing_" + listing_id + "_reviews.html"
+
+    content = open(htmlContent, encoding="utf-8")
+    soup = BeautifulSoup(content, "html.parser")
+    content.close()
+
+    diction = {}
+
+    liList = soup.find_all("li", class_="_1f1oir5")
+    for tag in liList:
+        date = tag.text
+        year = date.split()[-1]
+        if year in diction:
+            diction[year] += 1
+        else:
+            diction[year] += 1
+    
+    for value in diction.values():
+        if value > 90:
+            return False
+    return True
+
 
 
 class TestCases(unittest.TestCase):
