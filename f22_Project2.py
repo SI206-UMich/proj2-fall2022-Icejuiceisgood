@@ -25,7 +25,27 @@ def get_listings_from_search_results(html_file):
         ('Loft in Mission District', 210, '1944564'),  # example
     ]
     """
-    pass
+    airbnb_list = []
+    file = open(html_file)
+    f = file.read()
+    file.close()
+    soup = BeautifulSoup(f, 'html.parser')
+    div_tags = soup.find_all("div", class_= "t1jojoys dir dir-ltr")
+    cost = soup.find_all("div", class_= "_i5duul")
+    listing = soup.find_all("a", class_= "ln2bl2p dir dir-ltr")
+    name_list = []
+    cost_list = []
+    id_list = []
+    for div in range(len(div_tags)):
+        name_list.append(div_tags[div].text)
+        cost_list.append(int(cost[div].text[1:4]))
+    for place in listing:
+        room_num = re.findall("\/(\d+)", place.get("href", None))
+        for num in room_num:
+            id_list.append(num)
+    for index in range(len(name_list)):
+        airbnb_list.append((name_list[index], cost_list[index], id_list[index]))
+    return airbnb_list
 
 
 def get_listing_information(listing_id):
@@ -61,8 +81,6 @@ def get_detailed_listing_database(html_file):
     the complete listing information using the functions you’ve created.
     This function takes in a variable representing the location of the search results html file.
     The return value should be in this format:
-
-
     [
         (Listing Title 1,Cost 1,Listing ID 1,Policy Number 1,Place Type 1,Number of Bedrooms 1),
         (Listing Title 2,Cost 2,Listing ID 2,Policy Number 2,Place Type 2,Number of Bedrooms 2),
@@ -81,17 +99,13 @@ def write_csv(data, filename):
     "Listing Title", "Cost", "Listing ID", "Policy Number", "Place Type", "Number of Bedrooms",
     respectively as column headers. For each tuple in data, write a new
     row to the csv, placing each element of the tuple in the correct column.
-
     When you are done your CSV file should look like this:
-
     Listing Title,Cost,Listing ID,Policy Number,Place Type,Number of Bedrooms
     title1,cost1,id1,policy_number1,place_type1,num_bedrooms1
     title2,cost2,id2,policy_number2,place_type2,num_bedrooms2
     title3,cost3,id3,policy_number3,place_type3,num_bedrooms3
     ...
-
     In order of least cost to most cost.
-
     This function should not return anything.
     """
     pass
@@ -114,7 +128,6 @@ def check_policy_numbers(data):
         listing id 2,
         ...
     ]
-
     """
     pass
 
@@ -124,7 +137,6 @@ def extra_credit(listing_id):
     There are few exceptions to the requirement of listers obtaining licenses
     before listing their property for short term leases. One specific exception
     is if the lister rents the room for less than 90 days of a year.
-
     Write a function that takes in a listing id, scrapes the 'reviews' page
     of the listing id for the months and years of each review (you can find two examples
     in the html_files folder), and counts the number of reviews the apartment had each year.
