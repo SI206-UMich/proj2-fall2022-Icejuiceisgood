@@ -243,11 +243,14 @@ class TestCases(unittest.TestCase):
         self.assertEqual(len(listings), 20)
         # check that the variable you saved after calling the function is a list
         self.assertEqual(type(listings), list)
-        # check that each item in the list is a tuple
+        # check that each item in the list is a tuple\
+        for item in listings:
+            self.assertEqual(type(item), tuple)
 
         # check that the first title, cost, and listing id tuple is correct (open the search results html and find it)
-
+        self.assertEqual(listings[0],('Loft in Mission District', 210, '1944564'))
         # check that the last title is correct (open the search results html and find it)
+        self.assertEqual(listings[-1],('Guest suite in Mission District', 238, '32871760'))
         pass
 
     def test_get_listing_information(self):
@@ -271,10 +274,13 @@ class TestCases(unittest.TestCase):
             # check that the third element in the tuple is an int
             self.assertEqual(type(listing_information[2]), int)
         # check that the first listing in the html_list has policy number 'STR-0001541'
+        self.assertEqual(get_listing_information(html_list[0])[0],"STR-0001541")
 
         # check that the last listing in the html_list is a "Private Room"
+        self.assertEqual(get_listing_information(html_list[-1])[1],"Private Room")
 
         # check that the third listing has one bedroom
+        self.assertEqual(get_listing_information(html_list[2])[-1],1)
 
         pass
 
@@ -288,12 +294,15 @@ class TestCases(unittest.TestCase):
             # assert each item in the list of listings is a tuple
             self.assertEqual(type(item), tuple)
             # check that each tuple has a length of 6
+            self.assertEqual(len(item),6)
 
         # check that the first tuple is made up of the following:
         # 'Loft in Mission District', 210, '1944564', '2022-004088STR', 'Entire Room', 1
+        self.assertEqual(detailed_database[0],('Loft in Mission District', 210, '1944564', '2022-004088STR', 'Entire Room', 1))
 
         # check that the last tuple is made up of the following:
         # 'Guest suite in Mission District', 238, '32871760', 'STR-0004707', 'Entire Room', 1
+        self.assertEqual(detailed_database[-1],('Guest suite in Mission District', 238, '32871760', 'STR-0004707', 'Entire Room', 1))
 
         pass
 
@@ -312,10 +321,13 @@ class TestCases(unittest.TestCase):
         # check that there are 21 lines in the csv
         self.assertEqual(len(csv_lines), 21)
         # check that the header row is correct
+        self.assertEqual(csv_lines[0],['Listing Title', 'Cost', 'Listing ID', 'Policy Number', 'Place Type', 'Number of Bedrooms'])
 
         # check that the next row is Private room in Mission District,82,51027324,Pending,Private Room,1
+        self.assertEqual(csv_lines[1],['Private room in Mission District', '82', '51027324', 'Pending', 'Private Room', '1'])
 
         # check that the last row is Apartment in Mission District,399,28668414,Pending,Entire Room,2
+        self.assertEqual(csv_lines[-1],['Apartment in Mission District', '399', '28668414', 'Pending', 'Entire Room', '2'])
 
         pass
 
@@ -328,11 +340,19 @@ class TestCases(unittest.TestCase):
         # check that the return value is a list
         self.assertEqual(type(invalid_listings), list)
         # check that there is exactly one element in the string
-
+        self.assertEqual(len(invalid_listings), 1)
         # check that the element in the list is a string
+        self.assertIsInstance(invalid_listings[0],str)
 
         # check that the first element in the list is '16204265'
+        self.assertEqual(invalid_listings[0],"16204265")
         pass
+
+if __name__ == '__main__':
+    database = get_detailed_listing_database("html_files/mission_district_search_results.html")
+    write_csv(database, "airbnb_dataset.csv")
+    check_policy_numbers(database)
+    unittest.main(verbosity=2)
 
 
 if __name__ == '__main__':
