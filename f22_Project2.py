@@ -6,7 +6,7 @@ import csv
 import unittest
 
 #Rishabh Verma
-#Recieved help from: 
+#Recieved help from: Avery and Jonah Feldman
 
 def get_listings_from_search_results(html_file):
     """
